@@ -8,6 +8,8 @@ project(paw LANGUAGES CXX VERSION 0.1.0)
 
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp)
 
+include_directories(src)
+
 add_executable(paw ${SOURCES})
 
 if (MSVC)

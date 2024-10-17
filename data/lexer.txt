@@ -1,0 +1,13 @@
+// This is a single line comment
+/* This is a multi-line comment */
+
+let a = 5;
+let b = 0.5;
+let c = "Hello, World!";
+let d = 'Hello, World!';
+
+let e = a + b;
+let f = a - b;
+let g = a * b;
+let h = a / b;
+let i = a % b;
