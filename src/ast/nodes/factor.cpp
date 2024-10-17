@@ -18,7 +18,7 @@ void IdentFactorNode::parse(shared_ptr<Lexer> lexer) {
 }
 
 OptionalNodeValue IdentFactorNode::interpret() const {
-    return {};
+    return scope->lookup(id);
 }
 
 string IdentFactorNode::debug_string(int indent) const {
@@ -40,7 +40,7 @@ void StringFactorNode::parse(shared_ptr<Lexer> lexer) {
 }
 
 OptionalNodeValue StringFactorNode::interpret() const {
-    return {};
+    return {value};
 }
 
 string StringFactorNode::debug_string(int const indent) const {
@@ -62,7 +62,7 @@ void IntFactorNode::parse(shared_ptr<Lexer> const lexer) {
 }
 
 OptionalNodeValue IntFactorNode::interpret() const {
-    return {};
+    return {value};
 }
 
 string IntFactorNode::debug_string(int indent) const {
@@ -84,7 +84,7 @@ void FloatFactorNode::parse(shared_ptr<Lexer> const lexer) {
 }
 
 OptionalNodeValue FloatFactorNode::interpret() const {
-    return {};
+    return {value};
 }
 
 string FloatFactorNode::debug_string(int const indent) const {
@@ -108,7 +108,7 @@ void ParenExprFactorNode::parse(shared_ptr<Lexer> lexer) {
 }
 
 OptionalNodeValue ParenExprFactorNode::interpret() const {
-    return {};
+    return expr->interpret();
 }
 
 string ParenExprFactorNode::debug_string(int indent) const {

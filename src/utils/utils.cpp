@@ -2,6 +2,11 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <variant>
+#include "utils/operator_logic/add.hpp"
+#include "utils/operator_logic/div.hpp"
+#include "utils/operator_logic/mult.hpp"
+#include "utils/operator_logic/sub.hpp"
 
 std::optional<std::string> read_file(std::string const& path) {
     std::ifstream file(path);
@@ -55,17 +60,66 @@ std::ostream& operator<<(std::ostream& os, OptionalNodeValue const& value) {
 
 // Operator overloading for OptionalValue
 
-OptionalNodeValue operator+(NodeValue const& left, NodeValue const& right) {
-    if (get_type(left) != get_type(right)) {
-        // TODO: maybe do some casting here
-        return std::nullopt;
+template <typename Func>
+OptionalNodeValue overload(NodeValue const& left, NodeValue const& right, Func func) {
+    if (std::holds_alternative<int64_t>(left)) {
+        auto const& lhs = std::get<int64_t>(left);
+
+        if (std::holds_alternative<int64_t>(right)) {
+            return func(lhs, std::get<int64_t>(right));
+        }
+        if (std::holds_alternative<double>(right)) {
+            return func(lhs, std::get<double>(right));
+        }
+        if (std::holds_alternative<std::string>(right)) {
+            return func(lhs, std::get<std::string>(right));
+        }
     }
 
-    if (get_type(left) == NodeValueType::INT) {
-        return std::get<int64_t>(left) + std::get<int64_t>(right);
+    if (std::holds_alternative<double>(left)) {
+        auto const& lhs = std::get<double>(left);
+
+        if (std::holds_alternative<int64_t>(right)) {
+            return func(lhs, std::get<int64_t>(right));
+        }
+        if (std::holds_alternative<double>(right)) {
+            return func(lhs, std::get<double>(right));
+        }
+        if (std::holds_alternative<std::string>(right)) {
+            return func(lhs, std::get<std::string>(right));
+        }
     }
-    if (get_type(left) == NodeValueType::FLOAT) {
-        return std::get<double>(left) + std::get<double>(right);
+
+    if (std::holds_alternative<std::string>(left)) {
+        auto const& lhs = std::get<std::string>(left);
+
+        if (std::holds_alternative<int64_t>(right)) {
+            sub(lhs, std::to_string(std::get<int64_t>(right)));
+            return func(lhs, std::get<int64_t>(right));
+        }
+        if (std::holds_alternative<double>(right)) {
+            return func(lhs, std::get<double>(right));
+        }
+        if (std::holds_alternative<std::string>(right)) {
+            return func(lhs, std::get<std::string>(right));
+        }
     }
-    return std::get<std::string>(left) + std::get<std::string>(right);
+
+    throw std::runtime_error("Invalid types for operator overloading -- should never happen");
+}
+
+OptionalNodeValue operator+(NodeValue const& left, NodeValue const& right) {
+    return overload(left, right, [](auto const& a, auto const& b) { return add(a, b); });
+}
+
+OptionalNodeValue operator-(NodeValue const& left, NodeValue const& right) {
+    return overload(left, right, [](auto const& a, auto const& b) { return sub(a, b); });
+}
+
+OptionalNodeValue operator*(NodeValue const& left, NodeValue const& right) {
+    return overload(left, right, [](auto const& a, auto const& b) { return mult(a, b); });
+}
+
+OptionalNodeValue operator/(NodeValue const& left, NodeValue const& right) {
+    return overload(left, right, [](auto const& a, auto const& b) { return divi(a, b); });
 }

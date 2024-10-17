@@ -11,7 +11,7 @@ void TermExprNode::parse(shared_ptr<Lexer> const lexer) {
 }
 
 OptionalNodeValue TermExprNode::interpret() const {
-    return {};
+    return term->interpret();
 }
 
 string TermExprNode::debug_string(int const indent) const {
@@ -40,6 +40,19 @@ void BinOpExprNode::parse(shared_ptr<Lexer> const lexer) {
 }
 
 OptionalNodeValue BinOpExprNode::interpret() const {
+    auto lhs = this->lhs->interpret();
+    auto rhs = this->rhs->interpret();
+
+    if (!lhs.has_value() || !rhs.has_value()) {
+        return {};
+    }
+
+    if (op == "+") {
+        return {lhs.value() + rhs.value()};
+    } else if (op == "-") {
+        return {lhs.value() - rhs.value()};
+    }
+
     return {};
 }
 

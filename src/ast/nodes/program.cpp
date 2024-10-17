@@ -16,7 +16,18 @@ void ProgramNode::parse(shared_ptr<Lexer> const lexer) {
 }
 
 OptionalNodeValue ProgramNode::interpret() const {
-    return {};
+    int64_t success = 0;
+
+    for (auto const& stmt : statements) {
+        if (auto result = stmt->interpret(); result.has_value()) {
+            std::cout << result.value() << std::endl;
+        } else {
+            std::cerr << "Failed to interpret statement\n";
+            success++;
+        }
+    }
+
+    return {success};
 }
 
 string ProgramNode::debug_string(int const indent) const {

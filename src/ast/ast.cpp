@@ -11,6 +11,10 @@ Ast Ast::parse(shared_ptr<Lexer> const& lexer) {
     return ast;
 }
 
+OptionalNodeValue Ast::interpret() {
+    return root->interpret();
+}
+
 std::shared_ptr<SymbolTable> Ast::get_global_scope() const {
     return global_scope;
 }

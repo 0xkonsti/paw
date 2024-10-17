@@ -12,7 +12,7 @@ void ExprStmtNode::parse(shared_ptr<Lexer> const lexer) {
 }
 
 OptionalNodeValue ExprStmtNode::interpret() const {
-    return {};
+    return expr->interpret();
 }
 
 string ExprStmtNode::debug_string(int const indent) const {

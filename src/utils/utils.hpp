@@ -38,3 +38,9 @@ std::ostream& operator<<(std::ostream& os, OptionalNodeValue const& value);
 // TODO: implement op overloading for OptionalValue
 
 OptionalNodeValue operator+(NodeValue const& left, NodeValue const& right);
+
+OptionalNodeValue operator-(NodeValue const& left, NodeValue const& right);
+
+OptionalNodeValue operator*(NodeValue const& left, NodeValue const& right);
+
+OptionalNodeValue operator/(NodeValue const& left, NodeValue const& right);

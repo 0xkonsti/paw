@@ -28,6 +28,8 @@ class Ast {
 public:
     static Ast parse(shared_ptr<Lexer> const& lexer);
 
+    OptionalNodeValue interpret();
+
     [[nodiscard]] std::shared_ptr<SymbolTable> get_global_scope() const;
 
     [[nodiscard]] std::shared_ptr<AstNode> get_root() const;

@@ -10,7 +10,7 @@ void FactorTermNode::parse(shared_ptr<Lexer> const lexer) {
 }
 
 OptionalNodeValue FactorTermNode::interpret() const {
-    return {};
+    return factor->interpret();
 }
 
 string FactorTermNode::debug_string(int const indent) const {
@@ -39,6 +39,19 @@ void BinOpTermNode::parse(shared_ptr<Lexer> lexer) {
 }
 
 OptionalNodeValue BinOpTermNode::interpret() const {
+    auto lhs = this->lhs->interpret();
+    auto rhs = this->rhs->interpret();
+
+    if (!lhs.has_value() || !rhs.has_value()) {
+        return {};
+    }
+
+    if (op == "*") {
+        return {lhs.value() * rhs.value()};
+    } else if (op == "/") {
+        return {lhs.value() / rhs.value()};
+    }
+
     return {};
 }
 
