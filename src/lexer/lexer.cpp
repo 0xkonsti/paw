@@ -22,25 +22,39 @@ bool is_number(char const c, bool& is_float, bool const first) {
     return isdigit(c);
 }
 
-shared_ptr<Token> Lexer::next_token() {
-    current = peeked ? peeked : next();
+shared_ptr<Token> Lexer::next() {
+    current = peeked ? peeked : _next();
     peeked = nullptr;
     return current;
 }
 
-shared_ptr<Token> Lexer::peek_token() {
-    peeked = peeked ? peeked : next();
+shared_ptr<Token> Lexer::peek() {
+    peeked = peeked ? peeked : _next();
     return peeked;
 }
 
-optional<shared_ptr<Token>> Lexer::consume_token(set<TokenType> types) {
-    if (auto token = peek_token(); types.contains(token->type)) {
-        return next_token();
+optional<shared_ptr<Token>> Lexer::consume_token(TokenType type) {
+    if (auto token = peek(); token->type == type) {
+        return next();
     } else {
-        std::cerr << "Expected token of type " << types << "but got " << token->value;
+        std::cerr << "Expected token of type " << type << " but got " << token->value;
         std::cerr << token->location << std::endl;
     }
     return {};
+}
+
+optional<shared_ptr<Token>> Lexer::consume_token(set<TokenType> const& types) {
+    if (auto const token = peek(); types.contains(token->type)) {
+        return next();
+    } else {
+        std::cerr << "Expected token of type " << types << " but got " << token->value;
+        std::cerr << token->location << std::endl;
+    }
+    return {};
+}
+
+bool Lexer::has_next() {
+    return peek()->type != TokenType::END_OF_FILE;
 }
 
 void Lexer::trim_whitespace() {
@@ -104,7 +118,7 @@ optional<TokenType> Lexer::handle_multi_char_token(string& value) {
     return std::nullopt;
 }
 
-shared_ptr<Token> Lexer::next() {
+shared_ptr<Token> Lexer::_next() {
     trim_whitespace();
 
     Location loc = location;
@@ -115,10 +129,10 @@ shared_ptr<Token> Lexer::next() {
     }
 
     if (handle_comment()) {
-        return next();
+        return _next();
     }
 
-    TokenType type = TokenType::UNKNOWN;
+    auto type = TokenType::UNKNOWN;
     string value;
 
     if (is_identifier(c, true)) {
@@ -161,7 +175,7 @@ shared_ptr<Token> Lexer::next() {
             type = TokenType::INTEGER;
         }
     } else {
-        /*std::cerr << "Unknown character " << c << " at " << loc << std::endl;*/
+        std::cerr << "Unknown character " << c << " at " << loc << std::endl;
         valid = false;
         value = c;
     }

@@ -15,10 +15,13 @@ public:
     }
     ~Lexer() = default;
 
-    shared_ptr<Token> next_token();
-    shared_ptr<Token> peek_token();
+    shared_ptr<Token> next();
+    shared_ptr<Token> peek();
 
-    optional<shared_ptr<Token>> consume_token(set<TokenType> types);
+    optional<shared_ptr<Token>> consume_token(TokenType type);
+    optional<shared_ptr<Token>> consume_token(set<TokenType> const& types);
+
+    [[nodiscard]] bool has_next();
 
 private:
     string content;
@@ -38,5 +41,5 @@ private:
     bool handle_comment();
     optional<TokenType> handle_multi_char_token(string& value);
 
-    shared_ptr<Token> next();
+    shared_ptr<Token> _next();
 };
