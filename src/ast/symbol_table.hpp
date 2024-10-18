@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <map>
 #include <memory>
 #include <string>
@@ -10,9 +11,13 @@ using std::string, std::shared_ptr, std::unique_ptr, std::map;
 
 struct Symbol {
     string id;
+    NodeValueType type = NodeValueType::UNDEFINED;
     OptionalNodeValue value;
 
     Symbol(string id, OptionalNodeValue value) : id(std::move(id)), value(std::move(value)) {
+        if (value.has_value()) {
+            type = get_type(value.value());
+        }
     }
 
     explicit Symbol(string id) : id(std::move(id)), value({}) {
@@ -35,6 +40,10 @@ public:
     [[nodiscard]] bool contains(string const& id) const;
 
     [[nodiscard]] OptionalNodeValue lookup(string const& id);
+
+    [[nodiscard]] Symbol const& get(string const& id) const {
+        return *symbols.at(id);
+    }
 
     void update(string const& id, OptionalNodeValue const& value);
 

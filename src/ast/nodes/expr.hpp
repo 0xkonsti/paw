@@ -11,6 +11,8 @@ enum class ExprType {
 struct ExprNode : AstNode {
     using AstNode::AstNode;
 
+    NodeValueType type = NodeValueType::UNDEFINED;
+
     ~ExprNode() override = default;
 
     [[nodiscard]] AstNodeType get_type() const override {

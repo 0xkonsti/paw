@@ -21,9 +21,6 @@ OptionalNodeValue ProgramNode::interpret() const {
     for (auto const& stmt : statements) {
         if (auto result = stmt->interpret(); result.has_value()) {
             std::cout << result.value() << std::endl;
-        } else {
-            std::cerr << "Failed to interpret statement\n";
-            success++;
         }
     }
 

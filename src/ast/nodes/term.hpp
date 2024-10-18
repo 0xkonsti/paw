@@ -11,6 +11,8 @@ enum class TermType {
 struct TermNode : AstNode {
     using AstNode::AstNode;
 
+    NodeValueType type = NodeValueType::UNDEFINED;
+
     ~TermNode() override = default;
 
     [[nodiscard]] AstNodeType get_type() const override {

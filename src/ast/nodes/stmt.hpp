@@ -8,6 +8,7 @@ using std::optional, std::unique_ptr;
 
 enum class StmtType {
     EXPR,
+    DECL,
 };
 
 struct StmtNode : AstNode {
@@ -29,6 +30,24 @@ struct ExprStmtNode final : StmtNode {
 
     [[nodiscard]] StmtType get_stmt_type() const override {
         return StmtType::EXPR;
+    }
+
+    void parse(shared_ptr<Lexer> lexer) override;
+
+    [[nodiscard]] OptionalNodeValue interpret() const override;
+
+    [[nodiscard]] string debug_string(int indent) const override;
+};
+
+struct DeclStmtNode final : StmtNode {
+    using StmtNode::StmtNode;
+
+    string id;
+    NodeValueType type;
+    unique_ptr<ExprNode> expr;
+
+    [[nodiscard]] StmtType get_stmt_type() const override {
+        return StmtType::DECL;
     }
 
     void parse(shared_ptr<Lexer> lexer) override;

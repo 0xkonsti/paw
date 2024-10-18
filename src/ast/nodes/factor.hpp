@@ -18,6 +18,8 @@ enum class FactorType {
 struct FactorNode : AstNode {
     using AstNode::AstNode;
 
+    NodeValueType type = NodeValueType::UNDEFINED;
+
     ~FactorNode() override = default;
 
     [[nodiscard]] AstNodeType get_type() const override {

@@ -7,7 +7,15 @@ program
     ;
 
 stmt
-    = ( expr ) ';'
+= ( expr | decl | assign ) ';'
+    ;
+
+decl
+    = 'let' id [ '=' expr ]
+    ;
+
+assign
+    = id '=' expr
     ;
 
 expr

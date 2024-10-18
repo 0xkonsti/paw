@@ -2,7 +2,7 @@
 #include <sstream>
 
 std::ostream& operator<<(std::ostream& os, Symbol const& symbol) {
-    os << "Symbol: { id: " << symbol.id << ", value: " << symbol.value << " }";
+    os << "Symbol: { id: " << symbol.id << ", type: " << symbol.type << ", value: " << symbol.value << " }";
     return os;
 }
 

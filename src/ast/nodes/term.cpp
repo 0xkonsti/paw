@@ -5,6 +5,7 @@
 void FactorTermNode::parse(shared_ptr<Lexer> const lexer) {
     if (auto factor = parse_factor(lexer, scope); factor.has_value()) {
         this->factor = std::move(factor.value());
+        this->type = this->factor->type;
     } else {
         lexer->next();
     }
@@ -85,6 +86,17 @@ optional<unique_ptr<TermNode>> parse_term(shared_ptr<Lexer> const& lexer, shared
         auto term = std::make_unique<BinOpTermNode>(scope);
         term->lhs = std::move(lhs->factor);
         term->parse(lexer);
+        if (term->lhs->type != term->rhs->type) {
+            if (term->lhs->type == NodeValueType::STRING || term->rhs->type == NodeValueType::STRING) {
+                term->type = NodeValueType::STRING;
+            } else if (term->lhs->type == NodeValueType::FLOAT || term->rhs->type == NodeValueType::FLOAT) {
+                term->type = NodeValueType::FLOAT;
+            } else {
+                term->type = NodeValueType::INT;
+            }
+        } else {
+            term->type = term->lhs->type;
+        }
         return std::move(term);
     }
 

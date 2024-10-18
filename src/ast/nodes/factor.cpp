@@ -14,6 +14,8 @@ void IdentFactorNode::parse(shared_ptr<Lexer> lexer) {
     if (!scope->contains(id)) {
         std::cerr << "Variable " << id << " is not defined ";
         std::cerr << token_val->location << std::endl;
+    } else {
+        type = scope->get(id).type;
     }
 }
 
@@ -37,6 +39,7 @@ void StringFactorNode::parse(shared_ptr<Lexer> lexer) {
         // error
     }
     value = token.value()->value;
+    type = NodeValueType::STRING;
 }
 
 OptionalNodeValue StringFactorNode::interpret() const {
@@ -59,6 +62,7 @@ void IntFactorNode::parse(shared_ptr<Lexer> const lexer) {
         // error
     }
     value = std::stoll(token.value()->value);
+    type = NodeValueType::INT;
 }
 
 OptionalNodeValue IntFactorNode::interpret() const {
@@ -81,6 +85,7 @@ void FloatFactorNode::parse(shared_ptr<Lexer> const lexer) {
         // error
     }
     value = std::stod(token.value()->value);
+    type = NodeValueType::FLOAT;
 }
 
 OptionalNodeValue FloatFactorNode::interpret() const {
@@ -105,6 +110,7 @@ void ParenExprFactorNode::parse(shared_ptr<Lexer> lexer) {
     }
     this->expr = std::move(expr.value());
     lexer->consume_token(TokenType::RPAREN);
+    type = this->expr->type;
 }
 
 OptionalNodeValue ParenExprFactorNode::interpret() const {

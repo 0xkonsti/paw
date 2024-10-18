@@ -5,6 +5,7 @@
 void TermExprNode::parse(shared_ptr<Lexer> const lexer) {
     if (auto term = parse_term(lexer, scope); term.has_value()) {
         this->term = std::move(term.value());
+        this->type = this->term->type;
     } else {
         lexer->next();
     }
@@ -85,6 +86,17 @@ optional<unique_ptr<ExprNode>> parse_expr(shared_ptr<Lexer> const& lexer, shared
         auto expr = std::make_unique<BinOpExprNode>(scope);
         expr->lhs = std::move(lhs->term);
         expr->parse(lexer);
+        if (expr->lhs->type != expr->rhs->type) {
+            if (expr->lhs->type == NodeValueType::STRING || expr->rhs->type == NodeValueType::STRING) {
+                expr->type = NodeValueType::STRING;
+            } else if (expr->lhs->type == NodeValueType::FLOAT || expr->rhs->type == NodeValueType::FLOAT) {
+                expr->type = NodeValueType::FLOAT;
+            } else {
+                expr->type = expr->lhs->type;
+            }
+        } else {
+            expr->type = expr->lhs->type;
+        }
         return std::move(expr);
     }
 

@@ -25,6 +25,9 @@ std::optional<std::string> read_file(std::string const& path) {
 
 std::ostream& operator<<(std::ostream& os, NodeValueType const& type) {
     switch (type) {
+        case NodeValueType::UNDEFINED:
+            os << "UNDEFINED";
+            break;
         case NodeValueType::INT:
             os << "INT";
             break;
@@ -40,7 +43,7 @@ std::ostream& operator<<(std::ostream& os, NodeValueType const& type) {
 }
 
 NodeValueType get_type(NodeValue const& value) {
-    return static_cast<NodeValueType>(value.index());
+    return static_cast<NodeValueType>(value.index() + 1);
 }
 
 std::ostream& operator<<(std::ostream& os, NodeValue const& value) {

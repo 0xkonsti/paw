@@ -21,7 +21,7 @@ std::ostream& operator<<(std::ostream& os, std::set<T> const& values) {
     return os;
 }
 
-enum class NodeValueType { INT, FLOAT, STRING };
+enum class NodeValueType { UNDEFINED, INT, FLOAT, STRING };
 
 std::ostream& operator<<(std::ostream& os, NodeValueType const& type);
 
