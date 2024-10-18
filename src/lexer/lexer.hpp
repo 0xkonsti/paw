@@ -4,19 +4,19 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 #include "location.hpp"
 #include "token.hpp"
 
-using std::string, std::shared_ptr, std::optional, std::set;
+using std::string, std::shared_ptr, std::optional, std::set, std::vector;
 
 class Lexer {
 public:
-    explicit Lexer(string content, string path) : content(std::move(content)), location(std::move(path), 1, 1) {
-    }
+    explicit Lexer(string content, string path, size_t ll);
     ~Lexer() = default;
 
     shared_ptr<Token> next();
-    shared_ptr<Token> peek();
+    shared_ptr<Token> peek(size_t n = 0);
 
     optional<shared_ptr<Token>> consume_token(TokenType type);
     optional<shared_ptr<Token>> consume_token(set<TokenType> const& types);
@@ -28,8 +28,8 @@ private:
     uint64_t cursor = 0;
     Location location;
 
-    shared_ptr<Token> peeked = nullptr;
-    shared_ptr<Token> current = nullptr;
+    size_t lookahead_size;
+    vector<shared_ptr<Token>> lookahead;
 
     bool at_eof = false;
     bool valid = true;

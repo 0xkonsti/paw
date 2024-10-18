@@ -22,15 +22,26 @@ bool is_number(char const c, bool& is_float, bool const first) {
     return isdigit(c);
 }
 
-shared_ptr<Token> Lexer::next() {
-    current = peeked ? peeked : _next();
-    peeked = nullptr;
-    return current;
+Lexer::Lexer(string content, string path, size_t ll)
+    : content(std::move(content)), location(std::move(path), 1, 1), lookahead_size(ll) {
+    for (size_t i = 0; i < lookahead_size && !at_eof; ++i) {
+        lookahead.push_back(_next());
+    }
 }
 
-shared_ptr<Token> Lexer::peek() {
-    peeked = peeked ? peeked : _next();
-    return peeked;
+shared_ptr<Token> Lexer::next() {
+    auto token = lookahead.front();
+    lookahead.erase(lookahead.begin());
+    lookahead.push_back(_next());
+    return token;
+}
+
+shared_ptr<Token> Lexer::peek(size_t n) {
+    if (n >= lookahead_size) {
+        std::cerr << "Cannot peek " << n << " tokens ahead" << std::endl;
+        return nullptr;
+    }
+    return lookahead[n];
 }
 
 optional<shared_ptr<Token>> Lexer::consume_token(TokenType type) {

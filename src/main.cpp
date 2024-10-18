@@ -13,13 +13,15 @@ int main() {
     if (content.has_value()) {
         std::cout << content.value() << std::endl;
 
-        auto lexer = Lexer(content.value(), path);
+        // LL(1) lexer
+        auto lexer = Lexer(content.value(), path, 1);
 
         /*for (auto token = lexer.next(); token->type != TokenType::END_OF_FILE; token = lexer.next()) {*/
         /*    std::cout << *token << std::endl;*/
         /*}*/
 
-        auto ast = Ast::parse(make_shared<Lexer>(content.value(), path));
+        // LL(2) parser
+        auto ast = Ast::parse(make_shared<Lexer>(content.value(), path, 2));
 
         std::cout << ast.debug_string() << std::endl;
 
