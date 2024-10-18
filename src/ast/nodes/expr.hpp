@@ -5,7 +5,7 @@
 
 enum class ExprType {
     TERM,
-    BINOP,
+    BIN_OP,
 };
 
 struct ExprNode : AstNode {
@@ -44,7 +44,7 @@ struct BinOpExprNode final : ExprNode {
     string op;
 
     [[nodiscard]] ExprType get_expr_type() const override {
-        return ExprType::BINOP;
+        return ExprType::BIN_OP;
     }
 
     void parse(shared_ptr<Lexer> lexer) override;

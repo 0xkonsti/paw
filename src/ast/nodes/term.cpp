@@ -1,4 +1,5 @@
 #include "term.hpp"
+#include <iostream>
 #include <sstream>
 
 void FactorTermNode::parse(shared_ptr<Lexer> const lexer) {
@@ -39,20 +40,29 @@ void BinOpTermNode::parse(shared_ptr<Lexer> lexer) {
 }
 
 OptionalNodeValue BinOpTermNode::interpret() const {
-    auto lhs = this->lhs->interpret();
-    auto rhs = this->rhs->interpret();
+    auto rhs = &this->rhs;
+    auto op = this->op;
+    auto result = this->lhs->interpret();
 
-    if (!lhs.has_value() || !rhs.has_value()) {
-        return {};
+    while (rhs->get()->get_term_type() == TermType::BIN_OP) {
+        auto bin_op = dynamic_cast<BinOpTermNode*>(rhs->get());
+        if (op == "*") {
+            result = {result.value() * bin_op->lhs->interpret().value()};
+        } else if (op == "/") {
+            result = {result.value() / bin_op->lhs->interpret().value()};
+        }
+
+        rhs = &bin_op->rhs;
+        op = bin_op->op;
     }
 
     if (op == "*") {
-        return {lhs.value() * rhs.value()};
+        result = {result.value() * rhs->get()->interpret().value()};
     } else if (op == "/") {
-        return {lhs.value() / rhs.value()};
+        result = {result.value() / rhs->get()->interpret().value()};
     }
 
-    return {};
+    return result;
 }
 
 string BinOpTermNode::debug_string(int const indent) const {
