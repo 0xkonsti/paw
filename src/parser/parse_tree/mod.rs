@@ -8,6 +8,7 @@ pub mod program;
 pub mod stmt;
 
 use crate::lexer::Lexer;
+use crate::lexer::location::Location;
 use std::iter::Peekable;
 
 #[macro_export]
@@ -56,6 +57,8 @@ pub trait PTNode: std::fmt::Debug {
     fn node_type(&self) -> PTNodeType;
 
     fn as_any(&self) -> Box<dyn std::any::Any>;
+
+    fn location(&self) -> &Location;
 }
 
 #[derive(Debug)]

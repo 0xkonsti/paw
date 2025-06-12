@@ -29,3 +29,13 @@ impl std::fmt::Display for Location {
         write!(f, "<{}:{}:{}>", self.path, self.line, self.column)
     }
 }
+
+impl Default for Location {
+    fn default() -> Self {
+        Self {
+            path: String::new(),
+            line: 1,
+            column: 1,
+        }
+    }
+}

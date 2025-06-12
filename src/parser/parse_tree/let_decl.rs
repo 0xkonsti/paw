@@ -2,6 +2,7 @@ use super::expr::PTNExpr;
 use super::{PTNode, PTNodeType};
 use crate::downcast_node;
 use crate::lexer::Lexer;
+use crate::lexer::location::Location;
 use crate::lexer::token::TokenType;
 use std::iter::Peekable;
 
@@ -9,6 +10,7 @@ use std::iter::Peekable;
 pub struct PTNLetDecl {
     pub(crate) identifier: String,
     pub(crate) value: PTNExpr,
+    pub(crate) location: Location,
 }
 
 impl PTNode for PTNLetDecl {
@@ -16,6 +18,7 @@ impl PTNode for PTNLetDecl {
         // TODO: Add Errors for missing tokens
 
         if let Some(token) = lexer.peek().cloned() {
+            let location = token.location().clone();
             if token.is(TokenType::Let) {
                 lexer.next(); // Consume the 'let' keyword
                 if let Some(iden_token) = lexer.next() {
@@ -29,6 +32,7 @@ impl PTNode for PTNLetDecl {
                                 return Ok(Box::new(PTNLetDecl {
                                     identifier: iden,
                                     value: downcast_node!(value, PTNExpr),
+                                    location,
                                 }));
                             } else {
                                 return Err(eq_token
@@ -53,5 +57,9 @@ impl PTNode for PTNLetDecl {
 
     fn as_any(&self) -> Box<dyn std::any::Any> {
         Box::new(self.clone())
+    }
+
+    fn location(&self) -> &Location {
+        &self.location
     }
 }

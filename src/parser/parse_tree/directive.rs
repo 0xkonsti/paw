@@ -1,6 +1,7 @@
 use super::{PTNode, PTNodeType};
 use crate::check_for_semicolon;
 use crate::lexer::Lexer;
+use crate::lexer::location::Location;
 use crate::lexer::token::TokenType;
 use std::iter::Peekable;
 
@@ -12,6 +13,7 @@ pub enum DirecticeNamespace {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct PTNDirective {
     pub(crate) namespace: DirecticeNamespace,
+    pub(crate) location: Location,
 }
 
 impl PTNode for PTNDirective {
@@ -19,6 +21,7 @@ impl PTNode for PTNDirective {
         // TODO: Add Errors for missing tokens
 
         if let Some(token) = lexer.next() {
+            let location = token.location().clone();
             if token.is_directive() {
                 match token.token_type() {
                     TokenType::From => {
@@ -42,6 +45,7 @@ impl PTNode for PTNDirective {
                                     namespace: DirecticeNamespace::From {
                                         entry,
                                     },
+                                    location,
                                 }));
                             }
                         }
@@ -60,5 +64,9 @@ impl PTNode for PTNDirective {
 
     fn as_any(&self) -> Box<dyn std::any::Any> {
         Box::new(self.clone())
+    }
+
+    fn location(&self) -> &Location {
+        &self.location
     }
 }

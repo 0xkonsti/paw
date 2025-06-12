@@ -3,6 +3,7 @@ use super::stmt::PTNStmt;
 use super::{PTNode, PTNodeType};
 use crate::downcast_node;
 use crate::lexer::Lexer;
+use crate::lexer::location::Location;
 use crate::lexer::token::TokenType;
 use std::iter::Peekable;
 
@@ -10,14 +11,17 @@ use std::iter::Peekable;
 pub struct PTNProgram {
     pub(crate) stmts: Vec<PTNStmt>,
     pub(crate) directives: Vec<PTNDirective>,
+    pub(crate) location: Location,
 }
 
 impl PTNode for PTNProgram {
     fn parse(lexer: &mut Peekable<Lexer>) -> Result<Box<dyn PTNode>, String> {
         let mut stmts = Vec::new();
         let mut directives = Vec::new();
+        let mut location = Location::default();
 
         while let Some(token) = lexer.peek() {
+            location = token.location().clone();
             match token.token_type() {
                 TokenType::Eof => {
                     lexer.next();
@@ -37,6 +41,7 @@ impl PTNode for PTNProgram {
         Ok(Box::new(PTNProgram {
             stmts,
             directives,
+            location,
         }))
     }
 
@@ -46,5 +51,9 @@ impl PTNode for PTNProgram {
 
     fn as_any(&self) -> Box<dyn std::any::Any> {
         Box::new(self.clone())
+    }
+
+    fn location(&self) -> &Location {
+        &self.location
     }
 }

@@ -1,5 +1,6 @@
 use super::{PTNode, PTNodeType};
 use crate::lexer::Lexer;
+use crate::lexer::location::Location;
 use crate::lexer::token::TokenType;
 use crate::parser::parse_tree::expr::PTNExpr;
 use crate::parser::parse_tree::let_decl::PTNLetDecl;
@@ -15,12 +16,14 @@ pub enum StmtType {
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct PTNStmt {
     pub(crate) _type: StmtType,
+    pub(crate) location: Location,
 }
 
 impl PTNStmt {
     fn let_decl(decl: Box<dyn PTNode>) -> Self {
         PTNStmt {
             _type: StmtType::LetDecl(downcast_node!(decl, PTNLetDecl)),
+            location: decl.location().clone(),
         }
     }
 }
@@ -28,6 +31,7 @@ impl PTNStmt {
 impl PTNode for PTNStmt {
     fn parse(lexer: &mut Peekable<Lexer>) -> Result<Box<dyn PTNode>, String> {
         if let Some(token) = lexer.peek() {
+            let location = token.location().clone();
             match token.token_type() {
                 TokenType::Let => {
                     let decl = PTNLetDecl::parse(lexer)?;
@@ -43,6 +47,7 @@ impl PTNode for PTNStmt {
 
                     return Ok(Box::new(PTNStmt {
                         _type: StmtType::Expr(downcast_node!(expr, PTNExpr)),
+                        location,
                     }));
                 }
             }
@@ -57,5 +62,9 @@ impl PTNode for PTNStmt {
 
     fn as_any(&self) -> Box<dyn std::any::Any> {
         Box::new(self.clone())
+    }
+
+    fn location(&self) -> &Location {
+        &self.location
     }
 }

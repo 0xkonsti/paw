@@ -2,6 +2,7 @@ use super::block::PTNBlock;
 use super::{PTNode, PTNodeType};
 use crate::downcast_node;
 use crate::lexer::Lexer;
+use crate::lexer::location::Location;
 use crate::lexer::token::TokenType;
 use crate::parser::parse_tree::parameter::PTNParameter;
 use std::iter::Peekable;
@@ -10,6 +11,7 @@ use std::iter::Peekable;
 pub struct PTNLambda {
     pub(crate) params: Vec<PTNParameter>,
     pub(crate) body: PTNBlock,
+    pub(crate) location: Location,
 }
 
 impl PTNode for PTNLambda {
@@ -20,6 +22,7 @@ impl PTNode for PTNLambda {
 
         let mut params = Vec::new();
         let mut can_have_next_param = true;
+        let location = peeked.location().clone();
 
         if peeked.is(TokenType::Pipe) {
             lexer.next();
@@ -55,6 +58,7 @@ impl PTNode for PTNLambda {
         Ok(Box::new(PTNLambda {
             params,
             body: downcast_node!(body, PTNBlock),
+            location,
         }))
     }
 
@@ -64,5 +68,9 @@ impl PTNode for PTNLambda {
 
     fn as_any(&self) -> Box<dyn std::any::Any> {
         Box::new(self.clone())
+    }
+
+    fn location(&self) -> &Location {
+        &self.location
     }
 }

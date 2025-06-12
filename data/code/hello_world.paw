@@ -6,7 +6,8 @@ It demonstrates the basic syntax and structure of a Paw program.
 // here we define a fucntion named main with no parameters
 // and it prints "Hello, world!" to the console
 let main = || {
-    println("Hello, world!");
+    let hello = "Hello, world!";
+    println(hello);
 };
 
 // this is a Interpreter directive

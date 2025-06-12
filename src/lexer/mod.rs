@@ -11,7 +11,7 @@ use util::{is_identifier, is_number};
 pub struct Lexer<'a> {
     source: Peekable<Chars<'a>>,
     cursor: usize,
-    location: location::Location,
+    pub(crate) location: location::Location,
 
     at_eof: bool,
 }

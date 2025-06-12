@@ -2,6 +2,7 @@ use super::lambda::PTNLambda;
 use super::{PTNode, PTNodeType};
 use crate::downcast_node;
 use crate::lexer::Lexer;
+use crate::lexer::location::Location;
 use crate::lexer::token::{Token, TokenType};
 use std::iter::Peekable;
 
@@ -16,13 +17,16 @@ pub enum ExprType {
 
     Call {
         callee: Box<ExprType>,
+        callee_location: Location,
         args: Vec<Box<ExprType>>,
+        args_locations: Vec<Location>,
     },
 }
 
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct PTNExpr {
     pub(crate) _type: ExprType,
+    pub(crate) location: Location,
 }
 
 impl PTNExpr {
@@ -53,12 +57,14 @@ impl PTNExpr {
 
     fn parse_nud(lexer: &mut Peekable<Lexer>) -> Result<Box<dyn PTNode>, String> {
         if let Some(token) = lexer.peek() {
+            let location = token.location().clone();
             match token.token_type() {
                 TokenType::Identifier => {
                     let identifier = token.lexeme().to_string();
                     lexer.next(); // Consume the identifier token
                     Ok(Box::new(PTNExpr {
                         _type: ExprType::Identifier(identifier),
+                        location,
                     }))
                 }
 
@@ -67,6 +73,7 @@ impl PTNExpr {
                     lexer.next(); // Consume the string literal token
                     Ok(Box::new(PTNExpr {
                         _type: ExprType::StringLiteral(string_literal),
+                        location,
                     }))
                 }
 
@@ -78,6 +85,7 @@ impl PTNExpr {
                     lexer.next(); // Consume the integer token
                     Ok(Box::new(PTNExpr {
                         _type: ExprType::IntegerLiteral(integer_literal),
+                        location,
                     }))
                 }
 
@@ -89,6 +97,7 @@ impl PTNExpr {
                     lexer.next(); // Consume the float token
                     Ok(Box::new(PTNExpr {
                         _type: ExprType::FloatLiteral(float_literal),
+                        location,
                     }))
                 }
 
@@ -96,6 +105,7 @@ impl PTNExpr {
                     let lambda = PTNLambda::parse(lexer)?;
                     Ok(Box::new(PTNExpr {
                         _type: ExprType::Lambda(downcast_node!(lambda, PTNLambda)),
+                        location,
                     }))
                 }
 
@@ -112,6 +122,7 @@ impl PTNExpr {
         token: &Token,
         right_prec: u8,
     ) -> Result<Box<dyn PTNode>, String> {
+        let location = token.location().clone();
         match token.token_type() {
             TokenType::LParen => {
                 let mut args = Vec::new();
@@ -136,14 +147,17 @@ impl PTNExpr {
                     return Err(token.error("Expected ')' after function call arguments"));
                 }
 
+                let callee_location = left.location().clone();
+                let args_locations = args.iter().map(|arg| arg.location().clone()).collect();
+
                 Ok(Box::new(PTNExpr {
                     _type: ExprType::Call {
                         callee: Box::new(downcast_node!(left, PTNExpr)._type.clone()),
-                        args: args
-                            .into_iter()
-                            .map(|arg| Box::new(arg._type))
-                            .collect(),
+                        callee_location,
+                        args: args.into_iter().map(|arg| Box::new(arg._type)).collect(),
+                        args_locations,
                     },
+                    location,
                 }))
             }
             _ => Err(token.error("Unexpected token in expression")),
@@ -162,5 +176,9 @@ impl PTNode for PTNExpr {
 
     fn as_any(&self) -> Box<dyn std::any::Any> {
         Box::new(self.clone())
+    }
+
+    fn location(&self) -> &Location {
+        &self.location
     }
 }

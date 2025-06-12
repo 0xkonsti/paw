@@ -27,4 +27,8 @@ impl PTNode for PTNParameter {
     fn as_any(&self) -> Box<dyn std::any::Any> {
         Box::new(self.clone())
     }
+
+    fn location(&self) -> &crate::lexer::location::Location {
+        unimplemented!("PTNParameter::location is not implemented yet")
+    }
 }
