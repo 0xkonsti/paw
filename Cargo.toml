@@ -1,0 +1,25 @@
+[package]
+name = "paw"
+version = "0.1.0-dev"
+edition = "2024"
+description = "A Interpreter for the Paw programming language"
+categories = [
+    "interpreter",
+    "programming-language",
+    "paw-lang",
+    "paw",
+    "scripting",
+]
+keywords = [
+    "paw",
+    "paw-lang",
+    "interpreter",
+    "programming-language",
+    "scripting",
+]
+license = "Apache-2.0"
+repository = "https://github.com/0xkonsti/paw"
+rust-version = "1.89.0"
+authors = ["Konstantin Opora <konstantinopora@gmail.com"]
+
+[dependencies]

@@ -1,0 +1,10 @@
+/*
+This is a minimal example of an executable Paw script.
+*/
+
+// Create a lambda function that does nothing and assign it to the variable `main`.
+let main = || {};
+
+// This will set the main function to be the entry point of the script,
+// else nothing will happen when the script is run.
+from::main;

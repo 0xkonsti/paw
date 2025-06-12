@@ -1,0 +1,22 @@
+// This is a single line comment
+
+/*
+This is a multi-line comment
+*/
+
+let main = || {
+    let x = 5;
+    let y = x + 10;
+    let z = 4 - 2;
+
+    let n = 3 * 2;
+    let m = 8 / 4;
+
+    let a = 2.5;
+
+    let b = '🐧';
+    let c = "Hello, world!";
+
+    let d = true;
+    let e = false;
+}

@@ -1,0 +1,11 @@
+**/*.rs.bk
+rustc-ice-*
+
+target/
+debug/
+release/
+doc/
+*_old*
+
+.idea/
+.vscode/
