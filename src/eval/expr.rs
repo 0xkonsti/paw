@@ -29,6 +29,8 @@ impl<'a> TEval<'a> for Literal {
         Ok(match self {
             Literal::Integer(i) => Value::Integer(*i),
             Literal::Float(f) => Value::Float(*f),
+            Literal::Bool(b) => Value::Bool(*b),
+            Literal::String(s) => Value::String(s.clone()),
         })
     }
 }
@@ -39,5 +41,6 @@ fn eval_bin<'a>(lhs: Value<'a>, rhs: Value<'a>, op: BinOp) -> PawResult<Value<'a
         BinOp::Sub => lhs.sub(rhs),
         BinOp::Mul => lhs.mul(rhs),
         BinOp::Div => lhs.div(rhs),
+        BinOp::Mod => lhs.modulo(rhs),
     }
 }

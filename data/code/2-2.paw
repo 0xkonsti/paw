@@ -4,5 +4,6 @@ func !main {
     let z = x + y;
     let result = z * 2;
 
+    #show("result: ");
     #show(result);
 }

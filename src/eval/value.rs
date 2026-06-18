@@ -8,6 +8,9 @@ pub enum Value<'a> {
 
     Integer(i64),
     Float(f64),
+    Bool(bool),
+
+    String(String),
 
     Func(&'a FuncDecl),
 }
@@ -52,6 +55,13 @@ impl<'a> Value<'a> {
             _ => todo!("Type Error"),
         }
     }
+
+    pub fn modulo(self, other: Value<'a>) -> PawResult<Value<'a>> {
+        match (self, other) {
+            (Value::Integer(a), Value::Integer(b)) => Ok(Value::Integer(a % b)),
+            _ => todo!("Type Error"),
+        }
+    }
 }
 
 impl fmt::Display for Value<'_> {
@@ -61,6 +71,9 @@ impl fmt::Display for Value<'_> {
 
             Value::Integer(i) => write!(f, "{i}"),
             Value::Float(fl) => write!(f, "{fl}"),
+            Value::Bool(b) => write!(f, "{b}"),
+
+            Value::String(s) => write!(f, "{s}"),
 
             Value::Func(f) => todo!(),
         }

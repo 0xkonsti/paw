@@ -8,6 +8,8 @@ use crate::{
 pub enum Literal {
     Integer(i64),
     Float(f64),
+    Bool(bool),
+    String(String),
 }
 
 impl Parse for Literal {
@@ -16,11 +18,14 @@ impl Parse for Literal {
         match token.kind {
             TokenKind::Integer => Ok(Self::Integer(token.val.parse::<i64>().unwrap())),
             TokenKind::Float => Ok(Self::Float(token.val.parse::<f64>().unwrap())),
+            TokenKind::String => Ok(Self::String(token.val)),
+            TokenKind::True => Ok(Self::Bool(true)),
+            TokenKind::False => Ok(Self::Bool(false)),
 
             _ => Err(PawError {
                 kind: PawErrorKind::UnexpectedToken(token.val),
-                msg: "Expected a literal".into(),
-                loc: token.loc.clone(),
+                msg:  "Expected a literal".into(),
+                loc:  token.loc.clone(),
             }),
         }
     }
@@ -32,6 +37,7 @@ pub enum BinOp {
     Sub,
     Mul,
     Div,
+    Mod,
 }
 
 impl BinOp {
@@ -41,6 +47,7 @@ impl BinOp {
             TokenKind::Minus => Some(Self::Sub),
             TokenKind::Asterisk => Some(Self::Mul),
             TokenKind::Slash => Some(Self::Div),
+            TokenKind::Percent => Some(Self::Mod),
             _ => None,
         }
     }
@@ -92,8 +99,8 @@ impl Expr {
 
             _ => Err(PawError {
                 kind: PawErrorKind::UnexpectedToken(token.val),
-                msg: "Expected an expression".to_string(),
-                loc: token.loc.clone(),
+                msg:  "Expected an expression".to_string(),
+                loc:  token.loc.clone(),
             }),
         }
     }
@@ -108,8 +115,8 @@ impl Expr {
 
             _ => Err(PawError {
                 kind: PawErrorKind::UnexpectedToken(token.val),
-                msg: "Expected a binary operator".to_string(),
-                loc: token.loc.clone(),
+                msg:  "Expected a binary operator".to_string(),
+                loc:  token.loc.clone(),
             }),
         }
     }
@@ -117,7 +124,7 @@ impl Expr {
     fn get_precedence(kind: TokenKind) -> Option<(u16, u16)> {
         match kind {
             TokenKind::Plus | TokenKind::Minus => Some((50, 51)),
-            TokenKind::Asterisk | TokenKind::Slash => Some((60, 61)),
+            TokenKind::Asterisk | TokenKind::Slash | TokenKind::Percent => Some((60, 61)),
             _ => None,
         }
     }

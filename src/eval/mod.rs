@@ -12,6 +12,7 @@ mod block;
 mod decl;
 mod expr;
 mod file;
+mod intrinsic;
 mod stmt;
 
 pub trait TEval<'a> {
@@ -88,7 +89,7 @@ impl<'a> Eval {
         ctx.env.push_scope();
         let r = ast.root.eval(&mut ctx);
 
-        println!("{ctx:#?}");
+        // println!("{ctx:#?}");
 
         r
     }

@@ -18,6 +18,9 @@ pub enum TokenKind {
     Func,
     Let,
 
+    True,
+    False,
+
     // Punctuation
     LParen,
     RParen,
@@ -27,6 +30,7 @@ pub enum TokenKind {
     Equal,
 
     Semicolon,
+    Comma,
 
     ExcMark,
     Hash,
@@ -36,11 +40,15 @@ pub enum TokenKind {
     Minus,
     Asterisk,
     Slash,
+    Percent,
 }
 
 const KEYWORDS: phf::Map<&str, TokenKind> = phf_map! {
     "func" => TokenKind::Func,
     "let" => TokenKind::Let,
+
+    "true" => TokenKind::True,
+    "false" => TokenKind::False,
 };
 
 const SINGLE_CHAR_TOKENS: phf::Map<char, TokenKind> = phf_map! {
@@ -50,12 +58,14 @@ const SINGLE_CHAR_TOKENS: phf::Map<char, TokenKind> = phf_map! {
     '}' => TokenKind::RBrace,
     '=' => TokenKind::Equal,
     ';' => TokenKind::Semicolon,
+    ',' => TokenKind::Comma,
     '!' => TokenKind::ExcMark,
     '#' => TokenKind::Hash,
     '+' => TokenKind::Plus,
     '-' => TokenKind::Minus,
     '*' => TokenKind::Asterisk,
     '/' => TokenKind::Slash,
+    '%' => TokenKind::Percent,
 };
 
 impl TokenKind {
@@ -70,7 +80,12 @@ impl TokenKind {
     pub fn is_literal(&self) -> bool {
         matches!(
             self,
-            TokenKind::Identifier | TokenKind::Integer | TokenKind::Float | TokenKind::String
+            TokenKind::Identifier
+                | TokenKind::Integer
+                | TokenKind::Float
+                | TokenKind::String
+                | TokenKind::True
+                | TokenKind::False
         )
     }
 
@@ -82,8 +97,8 @@ impl TokenKind {
 #[derive(Debug, Clone)]
 pub struct Token {
     pub kind: TokenKind,
-    pub val: String,
-    pub loc: Location,
+    pub val:  String,
+    pub loc:  Location,
 }
 
 impl Token {
