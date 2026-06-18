@@ -1,0 +1,7 @@
+func !main {
+    let i = 1337;
+    let f = 6.9;
+
+    int j;
+    j = 420;
+}

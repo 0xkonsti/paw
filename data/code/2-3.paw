@@ -1,0 +1,30 @@
+func !main {
+    let a = 10;
+    let b = 20;
+    let c = 5;
+    let d = 2;
+
+    // arithmetic
+    let sum = a + b;
+    let diff = a - b;
+    let product = a * c;
+    let quotient = a / d;
+    let remainder = a % c;
+
+    // precedence + parens
+    let mixed = a + b * c;
+    let grouped = (a + b) * c;
+
+    // comparisons
+    let eq  = a == a;
+    let neq = a != b;
+    let lt  = a < b;
+    let gt  = b > a;
+    let lte = a <= b;
+    let gte = b >= a;
+
+    // logical
+    let and = a < b && b > c;
+    let or  = a == a || a > b;
+    let not = !eq;
+}

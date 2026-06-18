@@ -1,0 +1,13 @@
+func !main {
+    let a = 3;
+    let b = 4;
+    #println(add(a, b));
+}
+
+func add(int a, int b) :: int {
+    return a + b;
+}
+
+func greet(str name) {
+    #println("hello ", name);
+}

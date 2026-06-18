@@ -2,7 +2,7 @@ use phf::phf_map;
 
 use crate::util::{Location, shorten_string};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TokenKind {
     // Special tokens
     EOF,
@@ -16,6 +16,7 @@ pub enum TokenKind {
 
     // Keywords
     Func,
+    Let,
 
     // Punctuation
     LParen,
@@ -23,13 +24,23 @@ pub enum TokenKind {
     LBrace,
     RBrace,
 
+    Equal,
+
     Semicolon,
 
-    DollarSign,
+    ExcMark,
+    Hash,
+
+    // Operator
+    Plus,
+    Minus,
+    Asterisk,
+    Slash,
 }
 
 const KEYWORDS: phf::Map<&str, TokenKind> = phf_map! {
     "func" => TokenKind::Func,
+    "let" => TokenKind::Let,
 };
 
 const SINGLE_CHAR_TOKENS: phf::Map<char, TokenKind> = phf_map! {
@@ -37,8 +48,14 @@ const SINGLE_CHAR_TOKENS: phf::Map<char, TokenKind> = phf_map! {
     ')' => TokenKind::RParen,
     '{' => TokenKind::LBrace,
     '}' => TokenKind::RBrace,
+    '=' => TokenKind::Equal,
     ';' => TokenKind::Semicolon,
-    '$' => TokenKind::DollarSign,
+    '!' => TokenKind::ExcMark,
+    '#' => TokenKind::Hash,
+    '+' => TokenKind::Plus,
+    '-' => TokenKind::Minus,
+    '*' => TokenKind::Asterisk,
+    '/' => TokenKind::Slash,
 };
 
 impl TokenKind {
@@ -50,6 +67,13 @@ impl TokenKind {
         SINGLE_CHAR_TOKENS.get(&c).cloned()
     }
 
+    pub fn is_literal(&self) -> bool {
+        matches!(
+            self,
+            TokenKind::Identifier | TokenKind::Integer | TokenKind::Float | TokenKind::String
+        )
+    }
+
     fn name(&self) -> String {
         format!("{self:?}").to_uppercase()
     }
@@ -57,9 +81,9 @@ impl TokenKind {
 
 #[derive(Debug, Clone)]
 pub struct Token {
-    kind: TokenKind,
-    val:  String,
-    loc:  Location,
+    pub kind: TokenKind,
+    pub val: String,
+    pub loc: Location,
 }
 
 impl Token {
@@ -70,10 +94,20 @@ impl Token {
     pub fn eof(loc: Location) -> Self {
         Self { kind: TokenKind::EOF, val: String::new(), loc }
     }
+
+    pub fn is(&self, kind: TokenKind) -> bool {
+        self.kind == kind
+    }
 }
 
 impl std::fmt::Display for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "[{:<15}] ~ {:<60} {}", self.kind.name(), shorten_string(&self.val.escape_default(), 60), self.loc)
+        write!(
+            f,
+            "[{:<15}] ~ {:<60} {}",
+            self.kind.name(),
+            shorten_string(&self.val.escape_default(), 60),
+            self.loc
+        )
     }
 }

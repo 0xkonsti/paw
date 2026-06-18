@@ -1,0 +1,51 @@
+// the entry point of a file is a function marked by !
+func !main {
+    // Basic var decl
+    let i = 420;
+    let f = 1337.69;
+
+    // condinonal
+    if i > 10 {
+        // func call
+        print_three_times(i);
+    }
+
+    let v = Vec2.new(10, 15);
+    print_three_times(v);
+
+    print(add(1, 2));
+}
+
+// func def with params and return type
+func add(int x, int y) :: int {
+    return x + y;
+}
+
+// <> is a basic approch to generics
+// the part inside the <> is a function that needs to be defined on the type
+func print_three_times(<print~void> x) {
+    // loops
+    for i = 0; i < 3; i++ {
+        // with # u call a function defined inside the interpreter itself.
+        #println(x);
+    }
+}
+
+// struct def (no classes in paw)
+struct Vec2 {
+    // members
+    float x,
+    float y,
+
+    // methode -- $ decalars its static
+    func $new(<float~float> x, <float~float> y) :: Self {
+        return Vec2 {
+            x: float(x),
+            y: float(y),
+        }
+    }
+
+    func print() {
+        #print("Vec2 { x: ", self.x, ", y: ", self.y, "}");
+    }
+}

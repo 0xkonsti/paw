@@ -1,0 +1,36 @@
+func !main {
+    let i = 420;
+    let f = 1337.69;
+
+    if i > 10 {
+        print_three_times(i);
+    }
+
+    let v = Vec2.new(10, 15);
+    print_three_times(v);
+
+    #println(add(1, 2));
+}
+
+func add(int x, int y) :: int {
+    return x + y;
+}
+
+func print_three_times(<print~void> x) {
+    for i = 0; i < 3; i++ {
+        #println(x);
+    }
+}
+
+struct Vec2 {
+    float x,
+    float y,
+
+    func $new(float x, float y) :: Self {
+        return Vec2 { x: x, y: y }
+    }
+
+    func print() {
+        #print("Vec2(", self.x, ", ", self.y, ")");
+    }
+}

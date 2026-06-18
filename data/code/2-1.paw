@@ -1,0 +1,4 @@
+func !main {
+    let i = 42;
+    let f = 13.37;
+}

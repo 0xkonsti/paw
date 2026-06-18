@@ -1,0 +1,35 @@
+// reusable constraint — <name> still required at use site
+constraint Printable <print~void>;
+constraint Hashable  <hash~int, eq~bool>;
+
+func !main {
+    let v = Vec2.new(3, 4);
+    print_twice(v);
+    print_twice(42);
+}
+
+// uses the named constraint
+func print_twice(<Printable> x) {
+    #println(x);
+    #println(x);
+}
+
+// inline constraint still works too
+func print_thrice(<print~void> x) {
+    for i = 0; i < 3; i++ {
+        #println(x);
+    }
+}
+
+struct Vec2 {
+    float x,
+    float y,
+
+    func $new(float x, float y) :: Self {
+        return Vec2 { x: x, y: y }
+    }
+
+    func print() {
+        #print("Vec2(", self.x, ", ", self.y, ")");
+    }
+}

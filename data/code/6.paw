@@ -1,0 +1,17 @@
+struct Vec2 {
+    float x,
+    float y,
+
+    func $new(float x, float y) :: Self {
+        return { x: x, y: y }
+    }
+
+    func print() {
+        #print("Vec2(", self.x, ", ", self.y, ")");
+    }
+}
+
+func !main {
+    let v = Vec2.new(10, 20);
+    v.print();
+}

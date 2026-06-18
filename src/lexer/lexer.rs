@@ -1,15 +1,16 @@
 use std::{iter::Peekable, path::PathBuf, str::Chars};
 
 use crate::{
+    error::{PawError, PawErrorKind, PawResult},
     lexer::{Token, TokenKind},
     util::Location,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Lexer<'a> {
-    source: Peekable<Chars<'a>>,
-    cursor: usize,
-    loc:    Location,
+    source:  Peekable<Chars<'a>>,
+    cursor:  usize,
+    pub loc: Location,
 
     current_token:  Option<Token>,
     previous_token: Option<Token>,
@@ -61,7 +62,11 @@ impl<'a> Lexer<'a> {
                     val.push(self.advance().unwrap());
                 }
 
-                if let Some(tk) = TokenKind::is_keyword(&val) { (tk, val) } else { (TokenKind::Identifier, val) }
+                if let Some(tk) = TokenKind::is_keyword(&val) {
+                    (tk, val)
+                } else {
+                    (TokenKind::Identifier, val)
+                }
             }
             c if is_number(c, &mut float_flag) => {
                 let mut val = c.to_string();
@@ -166,8 +171,55 @@ impl<'a> Iterator for Lexer<'a> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {
+        if self.current_token.is_none() {
+            self.get_next_token();
+        }
+
         self.previous_token = self.current_token.take();
-        self.get_next_token()
+        self.previous_token.clone()
+    }
+}
+
+pub trait PeekableLexer<'a> {
+    fn peek_token(&mut self) -> Option<Token>;
+    fn peek_is(&mut self, kind: TokenKind) -> bool;
+    fn next_token(&mut self) -> Option<Token>;
+    fn previous_token(&mut self) -> Option<Token>;
+    fn expect_token(&mut self, kind: TokenKind, msg: &str) -> PawResult<Token>;
+}
+
+impl<'a> PeekableLexer<'a> for Lexer<'a> {
+    fn peek_token(&mut self) -> Option<Token> {
+        self.peek().cloned()
+    }
+
+    fn peek_is(&mut self, kind: TokenKind) -> bool {
+        if let Some(token) = self.peek()
+            && token.is(kind)
+        {
+            return true;
+        }
+        false
+    }
+
+    fn next_token(&mut self) -> Option<Token> {
+        self.next()
+    }
+
+    fn previous_token(&mut self) -> Option<Token> {
+        self.previous_token.clone()
+    }
+
+    fn expect_token(&mut self, kind: TokenKind, msg: &str) -> PawResult<Token> {
+        let token = self.next_token().unwrap();
+        if token.kind == kind {
+            return Ok(token.clone());
+        }
+        Err(PawError::new(
+            PawErrorKind::UnexpectedToken(token.val.clone()),
+            msg.to_string(),
+            token.loc.clone(),
+        ))
     }
 }
 
